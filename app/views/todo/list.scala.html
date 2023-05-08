@@ -1,0 +1,15 @@
+@*
+以下はview templeteでの引数を受け取る記載です。
+今回はTweetの一覧を取得するため@(tweets: Seq[Tweet]) となっています。
+*@
+@(todos: Seq[Todo])
+
+@main("一覧画面") {
+<h1>一覧画面です</h1>
+<ul>
+    @* Twirlでのfor記法です。forと(の間にスペースを入れると動かないので注意してください *1 *@
+    @for(todo <- todos) {
+    <li>@todo.content</li>
+    }
+</ul>
+}
