@@ -2,7 +2,7 @@
 以下はview templeteでの引数を受け取る記載です。
 今回はTweetの一覧を取得するため@(tweets: Seq[Tweet]) となっています。
 *@
-@(todos: Seq[Todo])
+@(todos: Seq[Todo2])
 
 @main("一覧画面") {
 <h1>一覧画面です</h1>
@@ -11,7 +11,7 @@
     @for(todo <- todos) {
     <li>
         @* よくウェブ上で @routes.HomeController.index のようなものをみるがこれはtwirlではデフォルトでcontrollers.routesがインポートされているためcontroller部分が省略されているだけ。*@
-        <a href="@controllers.todo.routes.TodoController.show(todo.id.getOrElse(0))">@todo.content</a>
+        <a href="@controllers.todo.routes.TodoController.show(todo.id.getOrElse(0))">@todo.title</a>
     </li>
     }
 </ul>

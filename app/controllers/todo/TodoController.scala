@@ -1,8 +1,8 @@
 package controllers.todo
 
 import ixias.model.Entity
-import models.Todo
-import lib.model.User
+import models.Todo2
+import lib.model.Todo
 import lib.persistence.onMySQL
 
 import javax.inject.{Inject, Singleton}
@@ -41,21 +41,26 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
     //val db_todo_list = onMySQL.UserRepository.get_all().map(todo => Todo(id = (todo.v.id),content = todo.v.name)
 
     for {
-      results <- onMySQL.UserRepository.get_all()
+      results <- onMySQL.TodoRepository.get_all()
     } yield {
-      Ok(views.html.todo.list(results.map(todo => Todo(id = (todo.v.id),content = todo.v.name))))
+      Ok(views.html.todo.list(results.map(todo => Todo2(id = (todo.v.id.getOrElse(0)),title = todo.v.title,
+        category_id = todo.v.category_id.getOrElse(0), body = todo.v.body, state = todo.v.state)
+      )))
     }
   }
+
+
   def show(id :Long) = Action async { implicit request: Request[AnyContent] =>
     //println(Await.result(onMySQL.UserRepository.get(User.Id(100)), Duration.Inf))
     //println("!!!!!!")
     //Ok(views.html.todo.show(Todo(Some(1), s"test todo${1.toString}")))
 
     for {
-      result <- onMySQL.UserRepository.get(User.Id(id))
+      result <- onMySQL.TodoRepository.get(Todo.Id(id))
     } yield {
       result match {
-        case Some(todo) => Ok(views.html.todo.show(Todo(id = todo.v.id, content = todo.v.name)))
+        case Some(todo) => Ok(views.html.todo.show(Todo2(id = (todo.v.id.getOrElse(0)), title = todo.v.title,
+          category_id = todo.v.category_id.getOrElse(0), body = todo.v.body, state = todo.v.state)))
         case None => NotFound(views.html.common.page404())
       }
     }
