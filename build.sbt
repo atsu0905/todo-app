@@ -11,6 +11,12 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.12.8"
 
 libraryDependencies += guice
+libraryDependencies += evolutions
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
+libraryDependencies += "com.typesafe.play"      %% "play-slick"            % "5.0.0"
+libraryDependencies += "com.typesafe.play"      %% "play-slick-evolutions" % "5.0.0"
+libraryDependencies += "com.typesafe.slick"     %% "slick-codegen"         % "3.3.2"
+libraryDependencies += "mysql"                   % "mysql-connector-java"  % "6.0.6"
 
 resolvers ++= Seq(
   "Nextbeat Releases"  at "http://maven.nextbeat.net.s3-ap-northeast-1.amazonaws.com/releases"

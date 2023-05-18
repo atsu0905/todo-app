@@ -16,8 +16,8 @@ import User._
 case class User(
   id:        Option[Id],
   name:      String,
-  age:       Short,
-  state:     Status,
+  slug:      String,
+  color:     Int,
   updatedAt: LocalDateTime = NOW,
   createdAt: LocalDateTime = NOW
 ) extends EntityModel[Id]
@@ -40,13 +40,13 @@ object User {
   }
 
   // INSERT時のIDがAutoincrementのため,IDなしであることを示すオブジェクトに変換
-  def apply(name: String, age: Short, state: Status): WithNoId = {
+  def apply(name: String, slug: String, color: Int): WithNoId = {
     new Entity.WithNoId(
       new User(
         id    = None,
         name  = name,
-        age   = age,
-        state = state
+        slug   = slug,
+        color = color
       )
     )
   }

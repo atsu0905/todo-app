@@ -27,6 +27,10 @@ case class UserRepository[P <: JdbcProfile]()(implicit val driver: P)
       .result.headOption
   }
 
+  def get_all(): Future[Seq[EntityEmbeddedId]] =
+    RunDBAction(UserTable, "slave") { _.result
+    }
+
   /**
     * Add User Data
    */
