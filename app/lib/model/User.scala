@@ -15,12 +15,22 @@ import java.time.LocalDateTime
 import User._
 case class User(
   id:        Option[Id],
-  name:      String,
-  slug:      String,
-  color:     Int,
+  category_id:        Long,
+  title:      String,
+  body:      String,
+  state:     Int,
   updatedAt: LocalDateTime = NOW,
   createdAt: LocalDateTime = NOW
 ) extends EntityModel[Id]
+
+case class Category(
+                 id:        Option[Id],
+                 name:      String,
+                 slug:      String,
+                 color:     Int,
+                 updatedAt: LocalDateTime = NOW,
+                 createdAt: LocalDateTime = NOW
+               ) extends EntityModel[Id]
 
 // コンパニオンオブジェクト
 //~~~~~~~~~~~~~~~~~~~~~~~~
@@ -40,13 +50,14 @@ object User {
   }
 
   // INSERT時のIDがAutoincrementのため,IDなしであることを示すオブジェクトに変換
-  def apply(name: String, slug: String, color: Int): WithNoId = {
+  def apply(category_id: Long, title: String, body: String, state: Int): WithNoId = {
     new Entity.WithNoId(
       new User(
         id    = None,
-        name  = name,
-        slug   = slug,
-        color = color
+        category_id = category_id,
+        title  = title,
+        body   = body,
+        state = state
       )
     )
   }
