@@ -43,7 +43,8 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
     for {
       results <- onMySQL.UserRepository.get_all()
     } yield {
-      Ok(views.html.todo.list(results.map(todo => Todo(id = (todo.v.id),content = todo.v.title))))
+      //Ok(views.html.todo.list(results.map(todo => Todo(id = (todo.v.id),content = todo.v.title))))
+      Ok(views.html.todo.list(results))
     }
   }
   def show(id :Long) = Action async { implicit request: Request[AnyContent] =>
@@ -56,6 +57,7 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
     } yield {
       result match {
         case Some(todo) => Ok(views.html.todo.show(Todo(id = todo.v.id, content = todo.v.title)))
+        //case Some(todo) => Ok(views.html.todo.show(result)))
         case None => NotFound(views.html.common.page404())
       }
     }
