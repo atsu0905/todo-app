@@ -62,4 +62,27 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
 
 
   }
+
+  def list_category() = Action async { implicit request: Request[AnyContent] =>
+    /*
+    val todos: Seq[Todo] = (1L to 10L).map(i => Todo(Some(i), s"test todo${i.toString}"))
+    val userWithNoId: User#WithNoId =User.apply(name = "hogehoge", slug = "slug", color = 1)
+    val userId = onMySQL.UserRepository.add(userWithNoId)
+    val id = Await.result(userId, Duration.Inf)
+    val user2 = Await.result(onMySQL.UserRepository.get(id), Duration.Inf).get
+    val name2 = user2.v.name
+    val id2 = user2.v.id
+
+    */
+    //val db_todo_list = Await.result(onMySQL.UserRepository.get_all(), Duration.Inf)
+    //val db_todo_list = onMySQL.UserRepository.get_all().map(todo => Todo(id = (todo.v.id),content = todo.v.name)
+
+    for {
+      results <- onMySQL.CategoryRepository.get_all()
+    } yield {
+      println(results)
+      //Ok(views.html.todo.list_category(results))
+      Ok(views.html.todo.list_category(Seq(1,2,3)))
+    }
+  }
 }

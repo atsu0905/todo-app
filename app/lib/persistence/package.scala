@@ -12,5 +12,6 @@ package object persistence {
   object onMySQL {
     implicit lazy val driver = slick.profile.MyDBProfile
     object UserRepository extends UserRepository
+    object CategoryRepository extends CategoryRepository
   }
 }
