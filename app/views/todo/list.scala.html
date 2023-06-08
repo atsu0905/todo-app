@@ -2,7 +2,7 @@
 以下はview templeteでの引数を受け取る記載です。
 今回はTweetの一覧を取得するため@(tweets: Seq[Tweet]) となっています。
 *@
-@import lib.persistence.onMySQL.UserRepository.EntityEmbeddedId
+@import lib.persistence.onMySQL.TodoRepository.EntityEmbeddedId
 @(todos: Seq[EntityEmbeddedId])
 
 @main("一覧画面") {

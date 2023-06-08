@@ -1,8 +1,7 @@
 package controllers.todo
 
 import ixias.model.Entity
-import models.Todo
-import lib.model.User
+import lib.model.Todo
 import lib.model.Category
 import lib.persistence.onMySQL
 
@@ -28,7 +27,7 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
   //   このActionにcontrollerComponentsが利用されているためInject部分でDIされている
   def list() = Action async{ implicit request: Request[AnyContent] =>
     for {
-      results <- onMySQL.UserRepository.get_all()
+      results <- onMySQL.TodoRepository.get_all()
     } yield {
       Ok(views.html.todo.list(results))
     }
@@ -44,7 +43,7 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
 
   def show(id :Long) = Action async { implicit request: Request[AnyContent] =>
     for {
-      result <- onMySQL.UserRepository.get(User.Id(id))
+      result <- onMySQL.TodoRepository.get(Todo.Id(id))
     } yield {
       result match {
         case Some(todo) => Ok(views.html.todo.show(todo))
