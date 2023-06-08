@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
  */
 
 // controllersクラスの外に記載
-case class TodoFormData(title: String, category_id: Int, body: String)
+case class TodoFormData(title: String, category_id: Int, body: String, state:Int)
 case class Test(title: String)
 
 @Singleton
@@ -76,7 +76,8 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
     mapping(
       "title"       -> nonEmptyText(maxLength = 140),
       "category"    -> number,
-      "body"        -> nonEmptyText(maxLength = 140)
+      "body"        -> nonEmptyText(maxLength = 140),
+      "state"    -> number
     )(TodoFormData.apply)(TodoFormData.unapply)
   )
   val test = Form(
@@ -85,12 +86,12 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
       "title" -> nonEmptyText(maxLength = 140)
     )(Test.apply)(Test.unapply)
   )
-  def register() = Action { implicit request: Request[AnyContent] =>
+  def register() = Action  { implicit request: Request[AnyContent] =>
     Ok(views.html.todo.store(form))
   }
 
 
-  def store() = Action { implicit request: Request[AnyContent] =>
+  def store() = Action  { implicit request: Request[AnyContent] =>
     // foldでデータ受け取りの成功、失敗を分岐しつつ処理が行える
     form.bindFromRequest().fold(
       // 処理が失敗した場合に呼び出される関数
@@ -108,6 +109,55 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
         // 以下のような書き方も可能です。基本的にはtwirl側と同じです
         // 自分自身がcontrollers.tweetパッケージに属しているのでcontrollers.tweetの部分が省略されています。
         // Redirect(routes.TweetController.list())
+      }
+    )
+  }
+
+  /**
+   * 編集画面を開く
+   */
+  def edit(id: Long) = Action async{ implicit request: Request[AnyContent] =>
+    for {
+      result <- onMySQL.TodoRepository.get(Todo.Id(id))
+    } yield {
+      result match {
+        case Some(todo) => Ok(views.html.todo.edit(
+          id, // データを識別するためのidを渡す
+          form.fill(TodoFormData(title = todo.v.title, category_id = todo.v.category_id.toInt, body = todo.v.body, state = todo.v.state)) // fillでformに値を詰める
+        ))
+        case None => NotFound(views.html.common.page404())
+      }
+    }
+  }
+
+  /**
+   * 対象のツイートを更新する
+   */
+  def update(id: Long) = Action  { implicit request: Request[AnyContent] =>
+    form.bindFromRequest().fold(
+      (formWithErrors: Form[TodoFormData]) => {
+        BadRequest(views.html.todo.edit(id, formWithErrors))
+      },
+      /*
+      (todoFormData: TodoFormData) => {
+        for {
+          result <- onMySQL.TodoRepository.get(Todo.Id(id))
+          update_result <- onMySQL.TodoRepository.update(result.get.map(_.copy(category_id = todoFormData.category_id)))
+          } yield{
+          update_result match {
+              case Some(todo) => Ok(views.html.todo.show(todo))
+              case None => NotFound(views.html.common.page404())
+            }
+          }
+      }*/
+      (todoFormData: TodoFormData) => {
+        for {
+          result <- onMySQL.TodoRepository.get(Todo.Id(id))
+          update_result <- onMySQL.TodoRepository.update(result.get.map(_.copy(category_id = todoFormData.category_id)))
+        } yield {
+          Unit
+        }
+        Redirect("/todo/list")
       }
     )
   }

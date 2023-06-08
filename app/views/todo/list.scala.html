@@ -14,6 +14,12 @@
         @* よくウェブ上で @routes.HomeController.index のようなものをみるがこれはtwirlではデフォルトでcontrollers.routesがインポートされているためcontroller部分が省略されているだけ。*@
         <a href="@controllers.todo.routes.TodoController.show(todo.v.id.getOrElse(0))">@todo.v.title</a>
     </li>
+    @* 編集ページへのリンク追加 *@
+    <li>
+        <a href="@controllers.todo.routes.TodoController.edit(todo.v.id.getOrElse(0))">
+            <button type="button">編集</button>
+        </a>
+    </li>
     }
 </ul>
 }

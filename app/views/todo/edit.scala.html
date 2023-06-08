@@ -1,10 +1,10 @@
 @import controllers.todo.TodoFormData
-@(form: Form[TodoFormData])(implicit messageProvider: MessagesProvider)
+@* idを引数に追加 *@
+@(id: Long, form: Form[TodoFormData])(implicit messagesProvider: MessagesProvider, requestHeader: RequestHeader)
 
-@main("登録画面") {
-<h1>登録画面です</h1>
-@helper.form(action = controllers.todo.routes.TodoController.store()) {
-
+@main("編集画面") {
+<h1>編集画面です</h1>
+@helper.form(action = controllers.todo.routes.TodoController.update(id)) {
 @helper.inputText(form("title"))
 @helper.select(
 form("category"),
@@ -19,6 +19,7 @@ options = helper.options(("0","TODO")),
 '_default -> "",
 '_help -> ""
 )
-<input type="submit" value="登録">
+<input type="submit" value="更新">
 }
 }
+
