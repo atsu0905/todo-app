@@ -1,0 +1,18 @@
+@import controllers.todo.TodoFormData
+@(form: Form[TodoFormData])(implicit messageProvider: MessagesProvider)
+
+@main("登録画面") {
+<h1>登録画面です</h1>
+@helper.form(action = controllers.todo.routes.TodoController.store()) {
+
+@helper.inputText(form("title"))
+@helper.select(
+form("category"),
+options = helper.options(("1","フロントエンド"),("2","バックエンド"),("3","インフラ")),
+'_default -> "",
+'_help -> ""
+)
+@helper.inputText(form("body"))
+<input type="submit" value="登録">
+}
+}

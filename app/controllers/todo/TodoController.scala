@@ -10,6 +10,9 @@ import play.api.mvc.ControllerComponents
 import play.api.mvc.BaseController
 import play.api.mvc.Request
 import play.api.mvc.AnyContent
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.i18n.I18nSupport
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -20,8 +23,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
  * @Injectでconstructorの引数をDIする
  *   BaseControllerにはprotected の controllerComponentsが存在するため、そこに代入される。
  */
+
+// controllersクラスの外に記載
+case class TodoFormData(title: String, category_id: Int, body: String)
+case class Test(title: String)
+
 @Singleton
-class TodoController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class TodoController @Inject()(val controllerComponents: ControllerComponents) extends BaseController with I18nSupport{
 
   // BaseControllerにActionメソッドが定義されているため、Actionがコールできる
   //   このActionにcontrollerComponentsが利用されているためInject部分でDIされている
@@ -61,5 +69,46 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
         case None => NotFound(views.html.common.page404())
       }
     }
+  }
+
+  val form = Form(
+    // html formのnameがcontentのものを140文字以下の必須文字列に設定する
+    mapping(
+      "title"       -> nonEmptyText(maxLength = 140),
+      "category"    -> number,
+      "body"        -> nonEmptyText(maxLength = 140)
+    )(TodoFormData.apply)(TodoFormData.unapply)
+  )
+  val test = Form(
+    // html formのnameがcontentのものを140文字以下の必須文字列に設定する
+    mapping(
+      "title" -> nonEmptyText(maxLength = 140)
+    )(Test.apply)(Test.unapply)
+  )
+  def register() = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.todo.store(form))
+  }
+
+
+  def store() = Action { implicit request: Request[AnyContent] =>
+    // foldでデータ受け取りの成功、失敗を分岐しつつ処理が行える
+    form.bindFromRequest().fold(
+      // 処理が失敗した場合に呼び出される関数
+      // 処理失敗の例: バリデーションエラー
+      (formWithErrors: Form[TodoFormData]) => {
+        BadRequest(views.html.todo.store(formWithErrors))
+      },
+
+      // 処理が成功した場合に呼び出される関数
+      (todoFormData: TodoFormData) => {
+        // 登録処理としてSeqに画面から受け取ったコンテンツを持つTweetを追加
+        onMySQL.TodoRepository.add(Todo(category_id = todoFormData.category_id, title = todoFormData.title, body = todoFormData.body, state = 0))
+        // 登録が完了したら一覧画面へリダイレクトする
+        Redirect("/todo/list")
+        // 以下のような書き方も可能です。基本的にはtwirl側と同じです
+        // 自分自身がcontrollers.tweetパッケージに属しているのでcontrollers.tweetの部分が省略されています。
+        // Redirect(routes.TweetController.list())
+      }
+    )
   }
 }
