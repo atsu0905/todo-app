@@ -1,0 +1,25 @@
+@import controllers.todo.TodoFormData
+@* idを引数に追加 *@
+@(id: Long, form: Form[TodoFormData])(implicit messagesProvider: MessagesProvider, requestHeader: RequestHeader)
+
+@main("編集画面") {
+<h1>編集画面です</h1>
+@helper.form(action = controllers.todo.routes.TodoController.update(id)) {
+@helper.inputText(form("title"))
+@helper.select(
+form("category"),
+options = helper.options(("1","フロントエンド"),("2","バックエンド"),("3","インフラ")),
+'_default -> "",
+'_help -> ""
+)
+@helper.inputText(form("body"))
+@helper.select(
+form("state"),
+options = helper.options(("0","TODO")),
+'_default -> "",
+'_help -> ""
+)
+<input type="submit" value="更新">
+}
+}
+

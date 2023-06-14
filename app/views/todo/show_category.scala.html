@@ -1,0 +1,14 @@
+@import lib.persistence.onMySQL.CategoryRepository.EntityEmbeddedId
+@(category: EntityEmbeddedId)
+
+@main("詳細画面") {
+<h1>詳細画面です</h1>
+<div id="detail">
+    <div>id: @category.v.id</div>
+    <div>content: @category.v.name</div>
+    <div>slug: @category.v.slug</div>
+    <div>color: @category.v.color</div>
+    <div>updated at: @category.v.updatedAt</div>
+    <div>created at: @category.v.createdAt</div>
+</div>
+}
