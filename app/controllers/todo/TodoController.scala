@@ -161,4 +161,24 @@ class TodoController @Inject()(val controllerComponents: ControllerComponents) e
       }
     )
   }
+
+  /**
+   * 対象のデータを削除する
+   */
+  def delete() = Action async { implicit request: Request[AnyContent] =>
+
+    def safeStringToInt(str: String): Option[Int] = {
+      import scala.util.control.Exception._
+      catching(classOf[NumberFormatException]) opt str.toInt
+    }
+
+    val id = safeStringToInt(request.body.asFormUrlEncoded.get("id").headOption.get).get
+
+    for {
+      result <- onMySQL.TodoRepository.remove(Todo.Id(id))
+      all_todo <- onMySQL.TodoRepository.get_all()
+    } yield {
+      Ok(views.html.todo.list(all_todo))
+    }
+  }
 }
